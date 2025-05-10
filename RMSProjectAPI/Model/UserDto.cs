@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using RMSProjectAPI.Database.Entity;
 
 namespace RMSProjectAPI.Model
 {
@@ -13,7 +14,8 @@ namespace RMSProjectAPI.Model
         public string? Street { get; set; }
 
         public char? Gender { get; set; }
-        public DateOnly? BirthDate { get; set; }
+        [Required]
+        public DateOnly BirthDate { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
        
@@ -31,5 +33,6 @@ namespace RMSProjectAPI.Model
         public string? Companywebsite { get; set; }
         public string UserIDPath { get; set; }
         public bool AcceptTerms { get; set; }
+        public UserType UserType { get; set; }
     }
 }

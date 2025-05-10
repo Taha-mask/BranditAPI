@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +39,7 @@ namespace RMSProjectAPI.Controllers
             _signInManager = signInManager;
         }
 
-        // ✅ Register API
+        // ✅ General Register API
         [HttpPost("Register")]
         public async Task<ActionResult> Register(UserDto userDto)
         {
@@ -65,9 +65,8 @@ namespace RMSProjectAPI.Controllers
                     PhoneNumber = userDto.PhoneNumber,
                     ProfilePicturePath = userDto.ProfilePicturePath,
                     UserIDPath = userDto.UserIDPath,
-                    AcceptTerms = userDto.AcceptTerms
-
-                  
+                    AcceptTerms = userDto.AcceptTerms,
+                    UserType = userDto.UserType
                 };
                 var result = await _userManager.CreateAsync(user, userDto.Password);
 
@@ -75,7 +74,123 @@ namespace RMSProjectAPI.Controllers
                 {
                     return BadRequest(result.Errors);
                 }
-                await _userManager.AddToRoleAsync(user, "admin");
+                
+                // Assign role based on user type
+                string role = userDto.UserType == UserType.Marketer ? "marketer" : "customer";
+                await _userManager.AddToRoleAsync(user, role);
+            }
+            else
+            {
+                return BadRequest("User already exists");
+            }
+
+            return Ok(userDto);
+        }
+        
+        // ✅ Register Customer API
+        [HttpPost("RegisterCustomer")]
+        public async Task<ActionResult> RegisterCustomer(UserDto userDto)
+        {
+            // Set user type to Customer
+            userDto.UserType = UserType.Customer;
+            
+            // Ensure BirthDate is set
+            if (userDto.BirthDate == default)
+            {
+                userDto.BirthDate = DateOnly.FromDateTime(DateTime.Today);
+            }
+            
+            var existingUser = await _userManager.FindByEmailAsync(userDto.Email);
+            if (existingUser == null)
+            {
+                var user = new User
+                {
+                    Email = userDto.Email,
+                    UserName = userDto.Email,
+                    FirstName = userDto.FirstName,
+                    LastName = userDto.LastName,
+                    BirthDate = userDto.BirthDate,
+                    Gender = userDto.Gender,
+                    Country = userDto.Country,
+                    City = userDto.City,
+                    Street = userDto.Street,
+                    Status = userDto.Status,
+                    Role = userDto.Role,
+                    Description = userDto.Description,
+                    PhoneNumber = userDto.PhoneNumber,
+                    ProfilePicturePath = userDto.ProfilePicturePath,
+                    UserIDPath = userDto.UserIDPath,
+                    AcceptTerms = userDto.AcceptTerms,
+                    UserType = UserType.Customer,
+                    // Set company-related fields to empty for customers
+                    CompanyName = string.Empty,
+                    Companywebsite = null
+                };
+                var result = await _userManager.CreateAsync(user, userDto.Password);
+
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
+                
+                // Assign customer role
+                await _userManager.AddToRoleAsync(user, "customer");
+            }
+            else
+            {
+                return BadRequest("User already exists");
+            }
+
+            return Ok(userDto);
+        }
+        
+        // ✅ Register Marketer API
+        [HttpPost("RegisterMarketer")]
+        public async Task<ActionResult> RegisterMarketer(UserDto userDto)
+        {
+            // Set user type to Marketer
+            userDto.UserType = UserType.Marketer;
+            
+            // Ensure BirthDate is set
+            if (userDto.BirthDate == default)
+            {
+                userDto.BirthDate = DateOnly.FromDateTime(DateTime.Today);
+            }
+            
+            var existingUser = await _userManager.FindByEmailAsync(userDto.Email);
+            if (existingUser == null)
+            {
+                var user = new User
+                {
+                    Email = userDto.Email,
+                    UserName = userDto.Email,
+                    FirstName = userDto.FirstName,
+                    LastName = userDto.LastName,
+                    BirthDate = userDto.BirthDate,
+                    Gender = userDto.Gender,
+                    Country = userDto.Country,
+                    City = userDto.City,
+                    Street = userDto.Street,
+                    Status = userDto.Status,
+                    Role = userDto.Role,
+                    Description = userDto.Description,
+                    CompanyName = userDto.CompanyName,
+                    Companywebsite = userDto.Companywebsite,
+                    PhoneNumber = userDto.PhoneNumber,
+                    ProfilePicturePath = userDto.ProfilePicturePath,
+                    UserIDPath = userDto.UserIDPath,
+                    AcceptTerms = userDto.AcceptTerms,
+                    UserType = UserType.Marketer
+                };
+                var result = await _userManager.CreateAsync(user, userDto.Password);
+
+                if (!result.Succeeded)
+                {
+                    return BadRequest(result.Errors);
+                }
+                
+                // Assign marketer role
+                await _userManager.AddToRoleAsync(user, "marketer");
             }
             else
             {

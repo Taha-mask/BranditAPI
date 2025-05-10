@@ -1,14 +1,20 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RMSProjectAPI.Database.Entity
 {
+    public enum UserType
+    {
+        Customer,
+        Marketer
+    }
+
     public class User: IdentityUser<Guid>
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public DateOnly? BirthDate { get; set; }
+        public DateOnly BirthDate { get; set; }
         public char? Gender { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
@@ -23,13 +29,6 @@ namespace RMSProjectAPI.Database.Entity
         public string? Companywebsite{ get; set; }
         public string UserIDPath { get; set; }
         public bool AcceptTerms { get; set; }
-
-
-
-
-
-
-
-
+        public UserType UserType { get; set; }
     }
 }
