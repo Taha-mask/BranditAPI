@@ -52,8 +52,8 @@ namespace RMSProjectAPI.Controllers
                     UserName = userDto.Email,
                     FirstName = userDto.FirstName,
                     LastName = userDto.LastName,
-                    BirthDate = userDto.BirthDate,
-                    Gender = userDto.Gender,
+                    BirthDate = DateOnly.Parse(userDto.BirthDate),
+                    Gender = !string.IsNullOrEmpty(userDto.Gender) ? userDto.Gender[0] : null,
                     Country = userDto.Country,
                     City = userDto.City,
                     Street = userDto.Street,
@@ -66,7 +66,7 @@ namespace RMSProjectAPI.Controllers
                     ProfilePicturePath = userDto.ProfilePicturePath,
                     UserIDPath = userDto.UserIDPath,
                     AcceptTerms = userDto.AcceptTerms,
-                    UserType = userDto.UserType
+                    UserType = (RMSProjectAPI.Database.Entity.UserType)userDto.UserType
                 };
                 var result = await _userManager.CreateAsync(user, userDto.Password);
 
@@ -76,7 +76,7 @@ namespace RMSProjectAPI.Controllers
                 }
                 
                 // Assign role based on user type
-                string role = userDto.UserType == UserType.Marketer ? "marketer" : "customer";
+                string role = userDto.UserType == (int)UserType.Marketer ? "marketer" : "customer";
                 await _userManager.AddToRoleAsync(user, role);
             }
             else
@@ -92,14 +92,14 @@ namespace RMSProjectAPI.Controllers
         public async Task<ActionResult> RegisterCustomer(UserDto userDto)
         {
             // Set user type to Customer
-            userDto.UserType = UserType.Customer;
+            userDto.UserType = (int)UserType.Customer;
             
             // Ensure BirthDate is set
             if (userDto.BirthDate == default)
             {
-                userDto.BirthDate = DateOnly.FromDateTime(DateTime.Today);
+                userDto.BirthDate = DateTime.Today.ToString("yyyy-MM-dd");
             }
-            
+
             var existingUser = await _userManager.FindByEmailAsync(userDto.Email);
             if (existingUser == null)
             {
@@ -109,8 +109,8 @@ namespace RMSProjectAPI.Controllers
                     UserName = userDto.Email,
                     FirstName = userDto.FirstName,
                     LastName = userDto.LastName,
-                    BirthDate = userDto.BirthDate,
-                    Gender = userDto.Gender,
+                    BirthDate = DateOnly.Parse(userDto.BirthDate),
+                    Gender = !string.IsNullOrEmpty(userDto.Gender) ? userDto.Gender[0] : null,
                     Country = userDto.Country,
                     City = userDto.City,
                     Street = userDto.Street,
@@ -121,8 +121,7 @@ namespace RMSProjectAPI.Controllers
                     ProfilePicturePath = userDto.ProfilePicturePath,
                     UserIDPath = userDto.UserIDPath,
                     AcceptTerms = userDto.AcceptTerms,
-                    UserType = UserType.Customer,
-                    // Set company-related fields to empty for customers
+                    UserType = (RMSProjectAPI.Database.Entity.UserType)UserType.Customer,
                     CompanyName = string.Empty,
                     Companywebsite = null
                 };
@@ -149,14 +148,14 @@ namespace RMSProjectAPI.Controllers
         public async Task<ActionResult> RegisterMarketer(UserDto userDto)
         {
             // Set user type to Marketer
-            userDto.UserType = UserType.Marketer;
+            userDto.UserType = (int)UserType.Marketer;
             
             // Ensure BirthDate is set
             if (userDto.BirthDate == default)
             {
-                userDto.BirthDate = DateOnly.FromDateTime(DateTime.Today);
+                userDto.BirthDate = DateTime.Today.ToString("yyyy-MM-dd");
             }
-            
+
             var existingUser = await _userManager.FindByEmailAsync(userDto.Email);
             if (existingUser == null)
             {
@@ -166,8 +165,8 @@ namespace RMSProjectAPI.Controllers
                     UserName = userDto.Email,
                     FirstName = userDto.FirstName,
                     LastName = userDto.LastName,
-                    BirthDate = userDto.BirthDate,
-                    Gender = userDto.Gender,
+                    BirthDate = DateOnly.Parse(userDto.BirthDate),
+                    Gender = !string.IsNullOrEmpty(userDto.Gender) ? userDto.Gender[0] : null,
                     Country = userDto.Country,
                     City = userDto.City,
                     Street = userDto.Street,
@@ -180,7 +179,7 @@ namespace RMSProjectAPI.Controllers
                     ProfilePicturePath = userDto.ProfilePicturePath,
                     UserIDPath = userDto.UserIDPath,
                     AcceptTerms = userDto.AcceptTerms,
-                    UserType = UserType.Marketer
+                    UserType = (RMSProjectAPI.Database.Entity.UserType)UserType.Marketer
                 };
                 var result = await _userManager.CreateAsync(user, userDto.Password);
 
@@ -309,8 +308,8 @@ namespace RMSProjectAPI.Controllers
 
             user.FirstName = updatedUser.FirstName;
             user.LastName = updatedUser.LastName;
-            user.BirthDate = updatedUser.BirthDate;
-            user.Gender = updatedUser.Gender;
+            user.BirthDate = DateOnly.Parse(updatedUser.BirthDate); // Fixed conversion
+            user.Gender = !string.IsNullOrEmpty(updatedUser.Gender) ? updatedUser.Gender[0] : null;
             user.Country = updatedUser.Country;
             user.City = updatedUser.City;
             user.Street = updatedUser.Street;

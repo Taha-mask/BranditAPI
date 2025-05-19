@@ -20,9 +20,11 @@ namespace RMSProjectAPI
                 // Online Database
                 //o.UseSqlServer("Server=db17706.databaseasp.net; Database=db17706; User Id=db17706; Password=X#w24xF@T%t7 ; Encrypt=False; MultipleActiveResultSets=True;");
 
+
                 // Local Database
                 o.UseSqlServer("Data Source=.;Initial Catalog=DB;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
             });
+
 
             // QR Code Service
             builder.Services.AddSingleton<QRCodeService>();
@@ -105,5 +107,11 @@ namespace RMSProjectAPI
 
             app.Run();
         }
+    }
+
+    public enum UserType
+    {
+        Customer = 0,
+        Marketer = 1
     }
 }
