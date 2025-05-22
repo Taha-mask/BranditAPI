@@ -168,7 +168,7 @@ namespace RMSProjectAPI.Controllers
 
         // POST: api/Post
         [HttpPost]
-        [Authorize(Roles = "marketer")]
+       // [Authorize(Roles = "marketer")]
         public async Task<ActionResult<PostResponseDto>> CreatePost(PostDto postDto)
         {
             // Get the current user ID from the claims

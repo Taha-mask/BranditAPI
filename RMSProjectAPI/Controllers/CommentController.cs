@@ -186,7 +186,7 @@ namespace RMSProjectAPI.Controllers
 
         // POST: api/Comment
         [HttpPost]
-        [Authorize]
+       // [Authorize]
         public async Task<ActionResult<CommentResponseDto>> CreateComment(CommentDto commentDto)
         {
             // Get the current user ID from the claims
