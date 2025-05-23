@@ -33,6 +33,12 @@ namespace RMSProjectAPI.Database
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Chat>()
+                .HasMany(c => c.Messages)
+                .WithOne(m => m.Chat)
+                .HasForeignKey(m => m.ChatID)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Disable cascade delete globally to prevent multiple cascade paths
 
             // User configurations
