@@ -15,6 +15,19 @@ namespace RMSProjectAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
+
+
+
+
             builder.Services.AddDbContext<AppDbContext>(o =>
             {
                 // Online Database
@@ -22,9 +35,10 @@ namespace RMSProjectAPI
 
 
                 // Local Database
-                //o.UseSqlServer("Data Source=.;Initial Catalog=DB;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+                o.UseSqlServer("Data Source=.;Initial Catalog=DB;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
             });
 
+            builder.Services.AddCors();
 
             // QR Code Service
             builder.Services.AddSingleton<QRCodeService>();
@@ -114,6 +128,14 @@ namespace RMSProjectAPI
                 };
             });
             builder.Services.AddAuthorization();
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddDefaultPolicy(i =>
+            //    {
+            //        i.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            //    });
+            //});
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", policy =>
@@ -143,19 +165,21 @@ namespace RMSProjectAPI
             // Uploading Images
             app.UseStaticFiles();
 
+            app.UseCors("AllowAll");
+
             app.UseAuthentication();
             app.UseAuthorization();
 
-            // Apply CORS policy - must be called before mapping endpoints
-            app.UseCors("CorsPolicy");
+            app.UseCors();
 
-            // Map hubs with explicit CORS policy
-            app.MapHub<ChatHub>("/chatHub").RequireCors("CorsPolicy");
-            app.MapHub<OrderHub>("/orderHub").RequireCors("CorsPolicy");
+            app.MapHub<ChatHub>("/chatHub");
+            app.MapHub<OrderHub>("/orderHub");
 
             app.MapControllers();
 
             app.Run();
+
+
         }
     }
 
